@@ -1,9 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"context"
+	"todo-level-5/config/db"
+)
 
 func main() {
-	// Call the function from the package
-	// This will print "Hello, World!"
-	fmt.Println("Hello, World!")
+	db.Connect(context.Background())
 }
