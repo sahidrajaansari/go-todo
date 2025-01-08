@@ -5,30 +5,31 @@ import (
 	"todo-level-5/pkg/contract/todo"
 	tRepo "todo-level-5/pkg/infrastructure/persistence/todo"
 
-	"go.mongodb.org/mongo-driver/mongo"
+	"github.com/segmentio/ksuid"
 )
 
 type TodoService struct {
-	client *mongo.Client
+	tRepo *tRepo.TodoRepo
 }
 
-func NewTodoService(client *mongo.Client) *TodoService {
+func NewTodoService(todoRepo *tRepo.TodoRepo) *TodoService {
 	return &TodoService{
-		client: client,
+		tRepo: todoRepo,
 	}
 }
 
-func collections(client *mongo.Client) *mongo.Collection {
-	return client.Database("todoDB").Collection("todos")
+func createNewTodoID() string {
+	return ksuid.New().String()
 }
 
-func (ts *TodoService) Create(ctx context.Context, todo todo.CreateTodoRequest) (*todo.CreateTodoResponse, error) {
-	todoM := tRepo.ToSpaceModel(todo)
+func (ts *TodoService) Create(ctx context.Context, tsr *todo.CreateTodoRequest) (*todo.CreateTodoResponse, error) {
+	todoID := createNewTodoID()
+	todo := FromSpaceTodoRequest(todoID, tsr)
 
-	_, err := collections(ts.client).InsertOne(context.Background(), todoM)
+	err := ts.tRepo.Create(ctx, todo)
 	if err != nil {
 		return nil, err
 	}
 
-	return ToCreateSpaceRes(todoM), nil
+	return ToCreateSpaceRes(todo), nil
 }

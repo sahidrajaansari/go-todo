@@ -11,14 +11,21 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"todo-level-5/config/db"
 	"todo-level-5/pkg/api/handlers"
-	"todo-level-5/pkg/application/todo"
+	todo2 "todo-level-5/pkg/application/todo"
+	"todo-level-5/pkg/infrastructure/persistence/todo"
 )
 
 // Injectors from wire.go:
 
-func ProvideTodoService() *todo.TodoService {
+func ProvideTodoRepo() *todo.TodoRepo {
 	client := ProvideClient()
-	todoService := todo.NewTodoService(client)
+	todoRepo := todo.NewTodoRepo(client)
+	return todoRepo
+}
+
+func ProvideTodoService() *todo2.TodoService {
+	todoRepo := ProvideTodoRepo()
+	todoService := todo2.NewTodoService(todoRepo)
 	return todoService
 }
 

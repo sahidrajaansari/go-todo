@@ -19,7 +19,7 @@ func NewTodoHandler(TodoService *tService.TodoService) *TodoHandler {
 }
 
 func (th *TodoHandler) CreateTodo(ctx *gin.Context) {
-	var requestBody tContracts.CreateTodoRequest
+	var requestBody *tContracts.CreateTodoRequest
 	if err := ctx.BindJSON(&requestBody); err != nil {
 		ctx.JSON(400, gin.H{
 			"error": err.Error(),

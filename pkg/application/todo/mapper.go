@@ -2,13 +2,17 @@ package todo
 
 import (
 	tContracts "todo-level-5/pkg/contract/todo"
-	tRepo "todo-level-5/pkg/infrastructure/persistence/todo"
+	todoagg "todo-level-5/pkg/domain/todo_aggregate"
 )
 
-func ToCreateSpaceRes(todoM *tRepo.TodoModel) *tContracts.CreateTodoResponse {
+func FromSpaceTodoRequest(todoId string, tsr *tContracts.CreateTodoRequest) *todoagg.Todo {
+	return todoagg.NewTodo(todoId, tsr.Title, tsr.Description, tsr.Status)
+}
+
+func ToCreateSpaceRes(tAgg *todoagg.Todo) *tContracts.CreateTodoResponse {
 	return &tContracts.CreateTodoResponse{
-		Id:          todoM.ID,
-		Title:       todoM.Title,
-		Description: todoM.Description,
+		Id:          tAgg.ID,
+		Title:       tAgg.Title,
+		Description: tAgg.Description,
 	}
 }
