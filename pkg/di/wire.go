@@ -8,6 +8,7 @@ import (
 	"todo-level-5/config/db"
 
 	h "todo-level-5/pkg/api/handlers"
+	tService "todo-level-5/pkg/application/todo"
 
 	"github.com/google/wire"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,8 +18,13 @@ func ProvideClient() *mongo.Client {
 	return db.Connect(context.Background())
 }
 
+func ProvideTodoService() *tService.TodoService {
+	wire.Build(tService.NewTodoService, ProvideClient)
+	return nil
+}
+
 func ProvideTodoHandler() *h.TodoHandler {
-	wire.Build(h.NewTodoHandler, ProvideClient)
+	wire.Build(h.NewTodoHandler, ProvideTodoService)
 	return nil
 }
 
