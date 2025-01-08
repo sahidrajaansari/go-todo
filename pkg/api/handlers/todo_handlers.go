@@ -36,3 +36,8 @@ func (th *TodoHandler) CreateTodo(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusAccepted, todo)
 }
+
+func (th *TodoHandler) GetTodoByID(ctx *gin.Context) {
+	// todoID := ctx.Param("id")
+
+}
