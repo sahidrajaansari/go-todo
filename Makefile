@@ -1,10 +1,22 @@
-.PHONY: start stop run-app
+include .env
 
-start:
+.PHONY: up down run-app build start
+up:
 	docker-compose up --build -d --remove-orphans
 
-stop:
+down:
 	docker-compose down
 
-run-app:
-	go run cmd/main.go
+build:
+	go build -o ${BINARY} cmd/main.go
+
+clean:
+	rm -f ${BINARY}
+
+start: 
+	@env DATABASE_USER=${DATABASE_USER} DATABASE_PASSWORD=${DATABASE_PASSWORD} ./${BINARY}
+
+restart: 
+	@make clean
+	@make build
+	@make start

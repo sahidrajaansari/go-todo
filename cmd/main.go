@@ -1,10 +1,13 @@
 package main
 
 import (
-	"context"
-	"todo-level-5/config/db"
+	"todo-level-5/cmd/server"
 )
 
 func main() {
-	db.Connect(context.Background())
+	// := db.Connect(context.Background())
+
+	srv := server.NewHttpServer()
+	server.SetupRoutes(srv)
+	srv.Run(":8080")
 }
