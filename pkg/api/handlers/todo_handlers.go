@@ -62,17 +62,20 @@ func (th *TodoHandler) GetTodoByID(ctx *gin.Context) {
 }
 
 func (th *TodoHandler) GetTodos(ctx *gin.Context) {
+	// Get the todos from the service layer
 	todos, err := th.tService.GetTodos(ctx)
 	if err != nil {
+		// Handle the error and return an appropriate response
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error":   "Failed to retrieve todo item",
+			"error":   "Failed to retrieve todos",
 			"details": err.Error(),
 		})
 		return
 	}
 
+	// Return the list of todos with a success message
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Todo retrieved successfully",
-		"todo":    todos,
+		"message": "Todos retrieved successfully",
+		"todos":   todos, // Changed "todo" to "todos"
 	})
 }
