@@ -6,18 +6,15 @@ import (
 	tContracts "todo-level-5/pkg/contract/todo"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type TodoHandler struct {
 	tService *tService.TodoService
-	client   *mongo.Client
 }
 
-func NewTodoHandler(TodoService *tService.TodoService, client *mongo.Client) *TodoHandler {
+func NewTodoHandler(TodoService *tService.TodoService) *TodoHandler {
 	return &TodoHandler{
 		tService: TodoService,
-		client:   client,
 	}
 }
 
