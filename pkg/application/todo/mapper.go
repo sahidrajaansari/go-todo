@@ -16,3 +16,12 @@ func ToCreateSpaceRes(tAgg *todoagg.Todo) *tContracts.CreateTodoResponse {
 		Description: tAgg.Description,
 	}
 }
+
+func ToGetByIDRes(tAgg *todoagg.Todo) *tContracts.GetTodoResponse {
+	return &tContracts.GetTodoResponse{
+		Id:          tAgg.ID,
+		Title:       tAgg.Title,
+		Description: tAgg.Description,
+		Status:      tAgg.Description,
+	}
+}

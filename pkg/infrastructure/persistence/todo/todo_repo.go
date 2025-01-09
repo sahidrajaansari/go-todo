@@ -36,15 +36,15 @@ func (tr *TodoRepo) Create(ctx context.Context, todoAgg *todoAgg.Todo) error {
 	return nil
 }
 
-func (tr *TodoRepo) GetTodoByID(ctx context.Context, todoID string) (todoAgg.Todo, error) {
-	var todo todoAgg.Todo
+func (tr *TodoRepo) GetTodoByID(ctx context.Context, todoID string) (*todoAgg.Todo, error) {
+	var todo *todoAgg.Todo
 	collection := todoCollection(tr.client)
-	err := collection.FindOne(ctx, bson.M{"id": todoID}).Decode(&todo)
+	err := collection.FindOne(ctx, bson.M{"_id": todoID}).Decode(&todo)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return todoAgg.Todo{}, errors.New("todo not found")
+			return nil, errors.New("todo not found")
 		}
-		return todoAgg.Todo{}, err
+		return nil, err
 	}
 	return todo, nil
 }

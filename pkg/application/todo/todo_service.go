@@ -2,9 +2,10 @@ package todo
 
 import (
 	"context"
-	"todo-level-5/pkg/contract/todo"
+	tContracts "todo-level-5/pkg/contract/todo"
 	tRepo "todo-level-5/pkg/infrastructure/persistence/todo"
 
+	"github.com/gin-gonic/gin"
 	"github.com/segmentio/ksuid"
 )
 
@@ -22,7 +23,7 @@ func createNewTodoID() string {
 	return ksuid.New().String()
 }
 
-func (ts *TodoService) Create(ctx context.Context, tsr *todo.CreateTodoRequest) (*todo.CreateTodoResponse, error) {
+func (ts *TodoService) Create(ctx context.Context, tsr *tContracts.CreateTodoRequest) (*tContracts.CreateTodoResponse, error) {
 	todoID := createNewTodoID()
 	todo := FromSpaceTodoRequest(todoID, tsr)
 
@@ -32,4 +33,15 @@ func (ts *TodoService) Create(ctx context.Context, tsr *todo.CreateTodoRequest) 
 	}
 
 	return ToCreateSpaceRes(todo), nil
+}
+
+func (ts *TodoService) GetTodoByID(ctx *gin.Context) (*tContracts.GetTodoResponse, error) {
+	todoID := ctx.Param(":id")
+
+	todo, err := ts.tRepo.GetTodoByID(ctx, todoID)
+	if err != nil {
+		return nil, err
+	}
+
+	return ToGetByIDRes(todo), nil
 }
