@@ -36,7 +36,7 @@ func (ts *TodoService) Create(ctx context.Context, tsr *tContracts.CreateTodoReq
 }
 
 func (ts *TodoService) GetTodoByID(ctx *gin.Context) (*tContracts.GetTodoResponse, error) {
-	todoID := ctx.Param(":id")
+	todoID := ctx.Param("id")
 
 	todo, err := ts.tRepo.GetTodoByID(ctx, todoID)
 	if err != nil {
