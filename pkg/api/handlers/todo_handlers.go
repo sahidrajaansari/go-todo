@@ -31,13 +31,13 @@ func (th *TodoHandler) CreateTodo(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{
 			"error": err.Error(),
 		})
-		return
 	}
 
 	todo, err := th.tService.Create(ctx, requestBody)
 	if err != nil {
-		ctx.JSON(402, gin.H{
-			"error": err,
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Failed to Create an Item",
+			"details": err.Error(),
 		})
 		return
 	}
@@ -47,9 +47,16 @@ func (th *TodoHandler) CreateTodo(ctx *gin.Context) {
 func (th *TodoHandler) GetTodoByID(ctx *gin.Context) {
 	todo, err := th.tService.GetTodoByID(ctx)
 	if err != nil {
-		ctx.JSON(400, gin.H{
-			"error": err,
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Failed to retrieve todo item",
+			"details": err.Error(),
 		})
+		return
 	}
-	ctx.JSON(http.StatusAccepted, todo)
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Todo retrieved successfully",
+		"todo":    todo,
+	})
+
 }
