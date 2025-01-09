@@ -31,7 +31,8 @@ func ProvideTodoService() *todo2.TodoService {
 
 func ProvideTodoHandler() *handlers.TodoHandler {
 	todoService := ProvideTodoService()
-	todoHandler := handlers.NewTodoHandler(todoService)
+	client := ProvideClient()
+	todoHandler := handlers.NewTodoHandler(todoService, client)
 	return todoHandler
 }
 

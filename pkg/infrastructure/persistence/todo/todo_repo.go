@@ -2,9 +2,11 @@ package todo
 
 import (
 	"context"
+	"errors"
 	"log"
-	todoagg "todo-level-5/pkg/domain/todo_aggregate"
+	todoAgg "todo-level-5/pkg/domain/todo_aggregate"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -22,7 +24,7 @@ func todoCollection(client *mongo.Client) *mongo.Collection {
 	return client.Database("todoDB").Collection("todos")
 }
 
-func (tr *TodoRepo) Create(ctx context.Context, todoAgg *todoagg.Todo) error {
+func (tr *TodoRepo) Create(ctx context.Context, todoAgg *todoAgg.Todo) error {
 	todo := ToSpaceModel(todoAgg)
 
 	_, err := todoCollection(tr.client).InsertOne(context.Background(), todo)
@@ -32,4 +34,17 @@ func (tr *TodoRepo) Create(ctx context.Context, todoAgg *todoagg.Todo) error {
 
 	log.Println("Created a Todo with id ", todo.ID)
 	return nil
+}
+
+func (tr *TodoRepo) GetTodoByID(ctx context.Context, todoID string) (todoAgg.Todo, error) {
+	var todo todoAgg.Todo
+	collection := todoCollection(tr.client)
+	err := collection.FindOne(ctx, bson.M{"id": todoID}).Decode(&todo)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return todoAgg.Todo{}, errors.New("todo not found")
+		}
+		return todoAgg.Todo{}, err
+	}
+	return todo, nil
 }

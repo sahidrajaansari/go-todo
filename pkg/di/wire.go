@@ -30,7 +30,7 @@ func ProvideTodoService() *tService.TodoService {
 }
 
 func ProvideTodoHandler() *h.TodoHandler {
-	wire.Build(h.NewTodoHandler, ProvideTodoService)
+	wire.Build(h.NewTodoHandler, ProvideTodoService, ProvideClient)
 	return nil
 }
 
