@@ -8,6 +8,7 @@ import (
 	todoAgg "todo-level-5/pkg/domain/todo_aggregate"
 
 	"github.com/ajclopez/mgs"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -73,4 +74,28 @@ func (tr *TodoRepo) GetTodoByID(ctx context.Context, todoID string) (*todoAgg.To
 
 	return todo.toDomain(), nil
 
+}
+
+func (tr *TodoRepo) GetTodos(ctx context.Context) ([]*todoAgg.Todo, error) {
+	var todos []*todoAgg.Todo
+	log.Println("Fetching all the todos")
+
+	cursor, err := todoCollection(tr.client).Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var todo TodoModel
+		if err := cursor.Decode(&todo); err != nil {
+			log.Println("Error decoding todo:", err)
+			continue
+		}
+		todos = append(todos, todo.toDomain())
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+	return todos, nil
 }

@@ -22,6 +22,6 @@ func ToGetByIDRes(tAgg *todoagg.Todo) *tContracts.GetTodoResponse {
 		Id:          tAgg.ID,
 		Title:       tAgg.Title,
 		Description: tAgg.Description,
-		Status:      tAgg.Description,
+		Status:      tAgg.Status,
 	}
 }

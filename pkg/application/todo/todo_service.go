@@ -45,3 +45,17 @@ func (ts *TodoService) GetTodoByID(ctx *gin.Context) (*tContracts.GetTodoRespons
 
 	return ToGetByIDRes(todo), nil
 }
+
+func (ts *TodoService) GetTodos(ctx context.Context) ([]*tContracts.GetTodoResponse, error) {
+	todos, err := ts.tRepo.GetTodos(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var allTodos []*tContracts.GetTodoResponse
+
+	for _, todo := range todos {
+		allTodos = append(allTodos, ToGetByIDRes(todo))
+	}
+
+	return allTodos, nil
+}
