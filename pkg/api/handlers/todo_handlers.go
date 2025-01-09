@@ -76,3 +76,17 @@ func (th *TodoHandler) GetTodos(ctx *gin.Context) {
 		"todos":   todos, // Changed "todo" to "todos"
 	})
 }
+
+func (th *TodoHandler) DeleteTodo(ctx *gin.Context) {
+	err := th.tService.DeleteTodo(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "todo not found",
+			"details": err.Error(),
+		})
+	}
+
+	ctx.JSON(http.StatusAccepted, gin.H{
+		"message": "Todo Had been Deleted",
+	})
+}

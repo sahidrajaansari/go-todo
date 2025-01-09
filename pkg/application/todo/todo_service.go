@@ -59,3 +59,14 @@ func (ts *TodoService) GetTodos(ctx context.Context) ([]*tContracts.GetTodoRespo
 
 	return allTodos, nil
 }
+
+func (ts *TodoService) DeleteTodo(ctx *gin.Context) error {
+	todoID := ctx.Param("id")
+
+	err := ts.tRepo.DeleteTodo(ctx, todoID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
