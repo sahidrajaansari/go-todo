@@ -25,7 +25,7 @@ func ToModelMetadata(md todoAgg.MetaData) todoAgg.MetaData {
 
 func ToTodoModel(todo *todoAgg.Todo) *TodoModel {
 	return &TodoModel{
-		ID:          "2rNWzlOcXbhQAkRRk77StyDYAqf",
+		ID:          todo.ID,
 		Title:       todo.Title,
 		Description: todo.Description,
 		Status:      todo.Status,

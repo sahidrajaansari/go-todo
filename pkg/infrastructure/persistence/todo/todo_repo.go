@@ -32,7 +32,6 @@ func (tr *TodoRepo) Create(ctx context.Context, todoAgg *todoAgg.Todo) error {
 
 	_, err := todoCollection(tr.client).InsertOne(ctx, todo)
 	if err != nil {
-		fmt.Println(err.Error())
 		return err
 	}
 
