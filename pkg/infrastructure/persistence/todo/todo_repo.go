@@ -30,8 +30,9 @@ func todoCollection(client *mongo.Client) *mongo.Collection {
 func (tr *TodoRepo) Create(ctx context.Context, todoAgg *todoAgg.Todo) error {
 	todo := ToTodoModel(todoAgg)
 
-	_, err := todoCollection(tr.client).InsertOne(context.Background(), todo)
+	_, err := todoCollection(tr.client).InsertOne(ctx, todo)
 	if err != nil {
+		fmt.Println(err.Error())
 		return err
 	}
 

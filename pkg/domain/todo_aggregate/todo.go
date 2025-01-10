@@ -1,4 +1,4 @@
-package todoaggregate
+package todo_aggregate
 
 import "time"
 
