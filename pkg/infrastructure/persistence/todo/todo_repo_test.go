@@ -109,7 +109,7 @@ func TestTodoRepo_DeleteTodo(t *testing.T) {
 			beforeTest: func(m *mtest.T) {
 				m.AddMockResponses(mtest.CreateCommandErrorResponse(mtest.CommandError{
 					Code:    2,
-					Message: "Invalid query parameters",
+					Message: "invalid query parameters",
 				}))
 			},
 			args: args{
@@ -130,7 +130,7 @@ func TestTodoRepo_DeleteTodo(t *testing.T) {
 				todoID: "nonexistent_id",
 			},
 			wantErr:    true,
-			errMessage: "todo not found",
+			errMessage: "mongo: no documents in result",
 		},
 	}
 

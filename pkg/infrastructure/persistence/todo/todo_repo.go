@@ -116,10 +116,7 @@ func (tr *TodoRepo) DeleteTodo(ctx context.Context, todoID string) error {
 	findOptions.SetProjection(result.Projection)
 
 	if err := todoCollection(tr.client).FindOneAndDelete(ctx, result.Filter, findOptions).Decode(&todo); err != nil {
-		if err == mongo.ErrNoDocuments {
-			log.Println("todo not found")
-			return errors.New("todo not found")
-		}
+		log.Println(err)
 		return err
 	}
 	log.Println("This todo Had been Deleted", todo)

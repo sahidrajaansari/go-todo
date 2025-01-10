@@ -84,6 +84,7 @@ func (th *TodoHandler) DeleteTodo(ctx *gin.Context) {
 			"error":   "todo not found",
 			"details": err.Error(),
 		})
+		return
 	}
 
 	ctx.JSON(http.StatusAccepted, gin.H{

@@ -6,10 +6,10 @@ import (
 )
 
 type TodoModel struct {
-	ID          string           `bson:"_id"`
-	Title       string           `bson:"title"`
+	ID          string           `bson:"_id" validate:"required"`
+	Title       string           `bson:"title" validate:"required"`
 	Description string           `bson:"description"`
-	Status      string           `bson:"status"`
+	Status      string           `bson:"status" validate:"required"`
 	Metadata    todoAgg.MetaData `bson:",inline"`
 }
 
