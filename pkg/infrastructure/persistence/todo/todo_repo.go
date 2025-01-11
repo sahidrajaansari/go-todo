@@ -35,7 +35,7 @@ func (tr *TodoRepo) Create(ctx context.Context, todoAgg *todoAgg.Todo) error {
 		return err
 	}
 
-	log.Println("Created a Todo with id ", todo.ID)
+	// log.Println("Created a Todo with id ", todo.ID)
 	return nil
 }
 
@@ -101,7 +101,6 @@ func (tr *TodoRepo) GetTodos(ctx context.Context) ([]*todoAgg.Todo, error) {
 }
 
 func (tr *TodoRepo) DeleteTodo(ctx context.Context, todoID string) error {
-	log.Println("Deleting todo with id ", todoID)
 	var todo TodoModel
 
 	opts := mgs.FindOption()
@@ -109,17 +108,13 @@ func (tr *TodoRepo) DeleteTodo(ctx context.Context, todoID string) error {
 
 	result, err := mgs.MongoGoSearch(query, opts)
 	if err != nil {
-		log.Println(ctx, fmt.Sprintf("Invalid query params: %v", query), err)
 		return errors.New("invalid query parameters ")
 	}
 	findOptions := options.FindOneAndDelete()
 	findOptions.SetProjection(result.Projection)
 
 	if err := todoCollection(tr.client).FindOneAndDelete(ctx, result.Filter, findOptions).Decode(&todo); err != nil {
-		log.Println(err)
 		return err
 	}
-	log.Println("This todo Had been Deleted", todo)
-
 	return nil
 }

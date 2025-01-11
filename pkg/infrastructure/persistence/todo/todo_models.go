@@ -3,13 +3,15 @@ package todo
 import (
 	"time"
 	todoAgg "todo-level-5/pkg/domain/todo_aggregate"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type TodoModel struct {
-	ID          string           `bson:"_id" validate:"required"`
-	Title       string           `bson:"title" validate:"required"`
+	ID          string           `bson:"_id"`
+	Title       string           `bson:"title"`
 	Description string           `bson:"description"`
-	Status      string           `bson:"status" validate:"required"`
+	Status      string           `bson:"status`
 	Metadata    todoAgg.MetaData `bson:",inline"`
 }
 
@@ -30,6 +32,14 @@ func ToTodoModel(todo *todoAgg.Todo) *TodoModel {
 		Description: todo.Description,
 		Status:      todo.Status,
 		Metadata:    ToModelMetadata(todo.MetaData),
+	}
+}
+func (tm *TodoModel) ToBsonD() bson.D {
+	return bson.D{
+		{Key: "_id", Value: tm.ID},
+		{Key: "title", Value: tm.Title},
+		{Key: "description", Value: tm.Description},
+		{Key: "status", Value: tm.Status},
 	}
 }
 

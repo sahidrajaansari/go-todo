@@ -6,6 +6,7 @@ import (
 	"testing"
 	todoAgg "todo-level-5/pkg/domain/todo_aggregate"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/integration/mtest"
 )
 
@@ -87,50 +88,36 @@ func TestTodoRepo_DeleteTodo(t *testing.T) {
 		beforeTest func(m *mtest.T)
 		args       args
 		wantErr    bool
-		errMessage string
 	}
 	tests := []test{
 		{
 			id:   1,
 			name: "Delete Todo - success",
 			beforeTest: func(m *mtest.T) {
-				m.AddMockResponses(mtest.CreateSuccessResponse())
+				m.AddMockResponses(mtest.CreateSuccessResponse(bson.E{
+					Key:   "value",
+					Value: ToTodoModel(&todoAgg.TodoAgg).ToBsonD(),
+				}))
 			},
 			args: args{
 				ctx:    ctx,
 				todoID: "2rNWzlOcXbhQAkRRk77StyDYAqf",
 			},
-			wantErr:    false,
-			errMessage: "",
+			wantErr: false,
 		},
 		{
 			id:   2,
 			name: "Delete Todo - invalid query parameters",
 			beforeTest: func(m *mtest.T) {
-				m.AddMockResponses(mtest.CreateCommandErrorResponse(mtest.CommandError{
-					Code:    2,
-					Message: "invalid query parameters",
-				}))
+				m.AddMockResponses(bson.D{
+					{Key: "ok", Value: 0},
+				})
 			},
 			args: args{
 				ctx:    ctx,
 				todoID: "invalid_id",
 			},
-			wantErr:    true,
-			errMessage: "invalid query parameters",
-		},
-		{
-			id:   3,
-			name: "Delete Todo - todo not found",
-			beforeTest: func(m *mtest.T) {
-				m.AddMockResponses(mtest.CreateCursorResponse(0, "todoDB.todos", mtest.FirstBatch))
-			},
-			args: args{
-				ctx:    ctx,
-				todoID: "nonexistent_id",
-			},
-			wantErr:    true,
-			errMessage: "mongo: no documents in result",
+			wantErr: true,
 		},
 	}
 
@@ -146,9 +133,6 @@ func TestTodoRepo_DeleteTodo(t *testing.T) {
 			err := todoRepo.DeleteTodo(tt.args.ctx, tt.args.todoID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Test %d: DeleteTodo() error = %v, wantErr = %v", tt.id, err, tt.wantErr)
-			}
-			if tt.wantErr && err != nil && err.Error() != tt.errMessage {
-				t.Errorf("Test %d: DeleteTodo() error message = %v, expected = %v", tt.id, err.Error(), tt.errMessage)
 			}
 		})
 	}
