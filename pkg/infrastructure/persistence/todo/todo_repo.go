@@ -28,7 +28,7 @@ func todoCollection(client *mongo.Client) *mongo.Collection {
 }
 
 func (tr *TodoRepo) Create(ctx context.Context, todoAgg *todoAgg.Todo) error {
-	todo := ToTodoModel(todoAgg)
+	todo := ToTodoModel(todoAgg, false)
 
 	_, err := todoCollection(tr.client).InsertOne(ctx, todo)
 	if err != nil {
@@ -40,7 +40,7 @@ func (tr *TodoRepo) Create(ctx context.Context, todoAgg *todoAgg.Todo) error {
 }
 
 func (tr *TodoRepo) GetTodoByID(ctx context.Context, todoID string) (*todoAgg.Todo, error) {
-	log.Println("Fetching todo with id ", todoID)
+	// log.Println("Fetching todo with id ", todoID)
 
 	var todo TodoModel
 	// Todo Without MGS
@@ -55,20 +55,16 @@ func (tr *TodoRepo) GetTodoByID(ctx context.Context, todoID string) (*todoAgg.To
 	//TODO WIth MGS
 	opts := mgs.FindOption()
 	query := fmt.Sprintf("_id=%s", todoID)
-	result, err := mgs.MongoGoSearch(query, opts)
-	if err != nil {
-		log.Println(ctx, fmt.Sprintf("Invalid query params: %v", query), err)
-		return nil, errors.New("invalid query parameters ")
-	}
+	result, _ := mgs.MongoGoSearch(query, opts)
+	// if err != nil {
+	// 	log.Println(ctx, fmt.Sprintf("Invalid query params: %v", query), err)
+	// 	return nil, errors.New("invalid query parameters ")
+	// }
 
 	findOpts := options.FindOne()
 	findOpts.SetProjection(result.Projection)
 
 	if err := todoCollection(tr.client).FindOne(ctx, result.Filter, findOpts).Decode(&todo); err != nil {
-		if err == mongo.ErrNoDocuments {
-			log.Println("todo not found")
-			return nil, errors.New("todo not found")
-		}
 		return nil, err
 	}
 

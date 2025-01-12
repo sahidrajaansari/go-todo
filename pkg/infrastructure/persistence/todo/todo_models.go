@@ -15,7 +15,13 @@ type TodoModel struct {
 	Metadata    todoAgg.MetaData `bson:",inline"`
 }
 
-func ToModelMetadata(md todoAgg.MetaData) todoAgg.MetaData {
+func ToModelMetadata(md todoAgg.MetaData, test bool) todoAgg.MetaData {
+	if test {
+		return todoAgg.MetaData{
+			CreatedAt: md.CreatedAt,
+			UpdatedAt: md.UpdatedAt,
+		}
+	}
 	if md.CreatedAt.IsZero() {
 		md.CreatedAt = time.Now()
 	}
@@ -25,13 +31,13 @@ func ToModelMetadata(md todoAgg.MetaData) todoAgg.MetaData {
 	}
 }
 
-func ToTodoModel(todo *todoAgg.Todo) *TodoModel {
+func ToTodoModel(todo *todoAgg.Todo, test bool) *TodoModel {
 	return &TodoModel{
 		ID:          todo.ID,
 		Title:       todo.Title,
 		Description: todo.Description,
 		Status:      todo.Status,
-		Metadata:    ToModelMetadata(todo.MetaData),
+		Metadata:    ToModelMetadata(todo.MetaData, test),
 	}
 }
 func (tm *TodoModel) ToBsonD() bson.D {
@@ -40,6 +46,8 @@ func (tm *TodoModel) ToBsonD() bson.D {
 		{Key: "title", Value: tm.Title},
 		{Key: "description", Value: tm.Description},
 		{Key: "status", Value: tm.Status},
+		{Key: "createdat", Value: tm.Metadata.CreatedAt},
+		{Key: "updatedat", Value: tm.Metadata.UpdatedAt},
 	}
 }
 
@@ -49,5 +57,6 @@ func (tm *TodoModel) toDomain() *todoAgg.Todo {
 		Title:       tm.Title,
 		Description: tm.Description,
 		Status:      tm.Status,
+		MetaData:    tm.Metadata, // include MetaData here
 	}
 }

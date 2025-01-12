@@ -3,6 +3,7 @@ package todo
 import (
 	"context"
 	"fmt"
+	"reflect"
 	"testing"
 	todoAgg "todo-level-5/pkg/domain/todo_aggregate"
 
@@ -73,6 +74,101 @@ func TestTodoRepo_Create(t *testing.T) {
 	}
 }
 
+func TestTodoRepo_GetTodoByID(t *testing.T) {
+	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
+	// defer mt.Close() // Close the mock client after test
+
+	// Define arguments structure for the test cases
+	type args struct {
+		ctx    context.Context
+		todoID string
+	}
+	// Define the structure for each test case
+	type test struct {
+		id         int
+		name       string
+		beforeTest func(m *mtest.T) // Function to set up mock responses
+		args       args
+		want       *todoAgg.Todo // Expected result
+		wantErr    bool          // Expected error status
+	}
+	ctx := context.Background()
+
+	// Define all test cases
+	tests := []test{
+		{
+			id:   1,
+			name: "Get Todo By ID - Success", // Successful test case
+			beforeTest: func(m *mtest.T) {
+				m.AddMockResponses(
+					mtest.CreateCursorResponse(1, "todoDB.todos", mtest.FirstBatch,
+						ToTodoModel(&todoAgg.TodoAgg, true).ToBsonD()),
+				)
+			},
+			args: args{
+				ctx:    ctx,
+				todoID: "valid", // Valid Todo ID
+			},
+			want:    &todoAgg.TodoAgg,
+			wantErr: false,
+		},
+		{
+			id:   2,
+			name: "Get Todo by ID Not Found - Failure", // Todo not found scenario
+			beforeTest: func(m *mtest.T) {
+				m.AddMockResponses(mtest.CreateCursorResponse(0, "todoDB.todos", mtest.FirstBatch))
+			},
+			args: args{
+				ctx:    ctx,
+				todoID: "nonExistentTodoID", // Invalid Todo ID
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			id:   3,
+			name: "Get Todo by ID BSON Error - Failure", // BSON decoding error scenario
+			beforeTest: func(m *mtest.T) {
+				m.AddMockResponses(mtest.CreateCursorResponse(0, "todoDB.todos", mtest.FirstBatch, bson.D{
+					{Key: "_id", Value: 1}, // Incorrect BSON format (simulated error)
+				}))
+			},
+			args: args{
+				ctx:    ctx,
+				todoID: "valid", // Valid Todo ID
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+
+	// Loop through all test cases
+	for _, tt := range tests {
+		mt.Run(tt.name, func(mt *mtest.T) {
+			// Set up the mock responses for the current test case
+			if tt.beforeTest != nil {
+				tt.beforeTest(mt)
+			}
+
+			// Create the TodoRepo instance
+			todoRepo := &TodoRepo{client: mt.Client}
+
+			// Call the method being tested
+			result, err := todoRepo.GetTodoByID(tt.args.ctx, tt.args.todoID)
+
+			// Check for errors and ensure they match the expected outcome
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Test ID %d - GetTodoByID() error = %v, wantErr = %v", tt.id, err, tt.wantErr)
+			}
+
+			// If there is an expected result, compare it with the actual result
+			if tt.want != nil && !reflect.DeepEqual(result, tt.want) {
+				t.Errorf("Test ID %d - GetTodoByID() = %v, expected = %v", tt.id, result, tt.want)
+			}
+		})
+	}
+}
+
 func TestTodoRepo_DeleteTodo(t *testing.T) {
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 	// defer mt.Close() // Ensures resources are properly released
@@ -132,98 +228,3 @@ func TestTodoRepo_DeleteTodo(t *testing.T) {
 		})
 	}
 }
-
-// func TestTodoRepo_GetTodoByID(t *testing.T) {
-// 	ctx := context.Background()
-// 	type args struct {
-// 		ctx    context.Context
-// 		todoID string
-// 	}
-// 	type test struct {
-// 		id         int
-// 		name       string
-// 		tr         *TodoRepo
-// 		beforeTest func(m *mtest.T)
-// 		args       args
-// 		want       *todoAgg.Todo
-// 		wantErr    bool
-// 	}
-// 	tests := []test{
-// 		{
-// 			id:   1,
-// 			name: "Get Todo - Success",
-// 			beforeTest: func(m *mtest.T) {
-// 				m.AddMockResponses(
-// 					mtest.CreateCursorResponse(1, "test.todo", mtest.FirstBatch, bson.D{
-// 						{Key: "_id", Value: "validTodoID"},
-// 						{Key: "title", Value: "Sample Todo"},
-// 						{Key: "completed", Value: "Hello"},
-// 					}),
-// 				)
-// 			},
-// 			args: args{
-// 				ctx:    ctx,
-// 				todoID: "validTodoID",
-// 			},
-// 			wantErr: false,
-// 			want:    &todoAgg.Todo{ID: "validTodoID", Title: "Sample Todo", Status: "Compeleted"},
-// 		},
-// 		// {
-// 		// 	id:   2,
-// 		// 	name: "Get Todo - Document Not Found",
-// 		// 	beforeTest: func(m *mtest.T) {
-// 		// 		m.AddMockResponses(mtest.CreateCursorResponse(0, "test.todo", mtest.FirstBatch))
-// 		// 	},
-// 		// 	args: args{
-// 		// 		ctx:    ctx,
-// 		// 		todoID: "nonExistentTodoID",
-// 		// 	},
-// 		// 	wantErr: true,
-// 		// 	want:    nil,
-// 		// },
-// 		// {
-// 		// 	id:   3,
-// 		// 	name: "Get Todo - Invalid Query Parameters",
-// 		// 	beforeTest: func(m *mtest.T) {
-// 		// 		m.AddMockResponses(bson.D{
-// 		// 			{Key: "ok", Value: 0},
-// 		// 			{Key: "errmsg", Value: "invalid query"},
-// 		// 		})
-// 		// 	},
-// 		// 	args: args{
-// 		// 		ctx:    ctx,
-// 		// 		todoID: "invalidTodoID",
-// 		// 	},
-// 		// 	wantErr: true,
-// 		// 	want:    nil,
-// 		// },
-// 		// {
-// 		// 	id:   4,
-// 		// 	name: "Get Todo - BSON Decoding Error",
-// 		// 	beforeTest: func(m *mtest.T) {
-// 		// 		m.AddMockResponses(mtest.CreateCursorResponse(1, "test.todo", mtest.FirstBatch, bson.D{
-// 		// 			{Key: "_id", Value: bson.A{1, 2, 3}}, // Invalid BSON structure
-// 		// 		}))
-// 		// 	},
-// 		// 	args: args{
-// 		// 		ctx:    ctx,
-// 		// 		todoID: "invalidBsonTodoID",
-// 		// 	},
-// 		// 	wantErr: true,
-// 		// 	want:    nil,
-// 		// },
-// 	}
-
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			got, err := tt.tr.GetTodoByID(tt.args.ctx, tt.args.todoID)
-// 			if (err != nil) != tt.wantErr {
-// 				t.Errorf("TodoRepo.GetTodoByID() error = %v, wantErr %v", err, tt.wantErr)
-// 				return
-// 			}
-// 			if !reflect.DeepEqual(got, tt.want) {
-// 				t.Errorf("TodoRepo.GetTodoByID() = %v, want %v", got, tt.want)
-// 			}
-// 		})
-// 	}
-// }
