@@ -4,19 +4,19 @@ import (
 	"context"
 	"log"
 	tContracts "todo-level-5/pkg/contract/todo"
-	tRepo "todo-level-5/pkg/infrastructure/persistence/todo"
+	iPersist "todo-level-5/pkg/domain/persistence"
 
 	"github.com/gin-gonic/gin"
 	"github.com/segmentio/ksuid"
 )
 
 type TodoService struct {
-	tRepo *tRepo.TodoRepo
+	tRepo iPersist.ITodoRepo
 }
 
-func NewTodoService(todoRepo *tRepo.TodoRepo) *TodoService {
+func NewTodoService(tRepo iPersist.ITodoRepo) *TodoService {
 	return &TodoService{
-		tRepo: todoRepo,
+		tRepo: tRepo,
 	}
 }
 

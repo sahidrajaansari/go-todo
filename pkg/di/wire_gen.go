@@ -8,10 +8,12 @@ package di
 
 import (
 	"context"
+	"github.com/google/wire"
 	"go.mongodb.org/mongo-driver/mongo"
 	"todo-level-5/config/db"
 	"todo-level-5/pkg/api/handlers"
 	todo2 "todo-level-5/pkg/application/todo"
+	"todo-level-5/pkg/domain/persistence"
 	"todo-level-5/pkg/infrastructure/persistence/todo"
 )
 
@@ -46,3 +48,7 @@ func InjectHandler() *handlers.Handlers {
 func ProvideClient() *mongo.Client {
 	return db.Connect(context.Background())
 }
+
+var todoRepoSet = wire.NewSet(
+	ProvideTodoRepo, wire.Bind(new(persistence.ITodoRepo), new(*todo.TodoRepo)),
+)

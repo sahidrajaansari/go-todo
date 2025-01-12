@@ -9,6 +9,7 @@ import (
 
 	h "todo-level-5/pkg/api/handlers"
 	tService "todo-level-5/pkg/application/todo"
+	iPersist "todo-level-5/pkg/domain/persistence"
 	tRepo "todo-level-5/pkg/infrastructure/persistence/todo"
 
 	"github.com/google/wire"
@@ -24,8 +25,13 @@ func ProvideTodoRepo() *tRepo.TodoRepo {
 	return nil
 }
 
+var todoRepoSet = wire.NewSet(
+	ProvideTodoRepo,
+	wire.Bind(new(iPersist.ITodoRepo), new(*tRepo.TodoRepo)),
+)
+
 func ProvideTodoService() *tService.TodoService {
-	wire.Build(tService.NewTodoService, ProvideTodoRepo)
+	wire.Build(tService.NewTodoService, todoRepoSet)
 	return nil
 }
 
