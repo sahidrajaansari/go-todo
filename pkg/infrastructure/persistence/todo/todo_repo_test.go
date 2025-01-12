@@ -169,6 +169,141 @@ func TestTodoRepo_GetTodoByID(t *testing.T) {
 	}
 }
 
+func TestTodoRepo_UpdateTodo(t *testing.T) {
+	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
+
+	type args struct {
+		ctx            context.Context
+		todoID         string
+		updatedTodoAgg *todoAgg.Todo
+	}
+	type test struct {
+		id         int
+		name       string
+		beforeTest func(m *mtest.T) // Function to set up mock responses
+		args       args
+		want       *todoAgg.Todo // Expected result
+		wantErr    bool          // Expected error status
+	}
+	ctx := context.Background()
+
+	tests := []test{
+		{
+			id:   1,
+			name: "Update Todo Update Everything - Success",
+			beforeTest: func(m *mtest.T) {
+				m.AddMockResponses(mtest.CreateSuccessResponse(bson.E{
+					Key: "value", Value: ToTodoModel(&todoAgg.TodoAgg, true).ToBsonD(),
+				}))
+			},
+			args: args{
+				ctx:    ctx,
+				todoID: "valid",
+				updatedTodoAgg: &todoAgg.Todo{
+					Title:       "Changeing The Title",
+					Description: "Change Description",
+					Status:      "Change Status",
+				},
+			},
+			want: &todoAgg.Todo{
+				ID:          "valid",
+				Title:       "Changeing The Title",
+				Description: "Change Description",
+				Status:      "Change Status",
+			},
+			wantErr: false,
+		},
+		{
+			id:   2,
+			name: "Update Todo Update Single Field - Success",
+			beforeTest: func(m *mtest.T) {
+				m.AddMockResponses(mtest.CreateSuccessResponse(bson.E{
+					Key: "value", Value: ToTodoModel(&todoAgg.TodoAgg, true).ToBsonD(),
+				}))
+			},
+			args: args{
+				ctx:    ctx,
+				todoID: "valid",
+				updatedTodoAgg: &todoAgg.Todo{
+					Title:       "Changing The Title",
+					Description: "",
+					Status:      "",
+				},
+			},
+			want: &todoAgg.Todo{
+				ID:          "valid",
+				Title:       "Changing The Title",
+				Description: "Change Description",
+				Status:      "Change Status",
+			},
+			wantErr: false,
+		},
+		{
+			id:   3,
+			name: "Document Not found - Failure",
+			beforeTest: func(m *mtest.T) {
+				m.AddMockResponses(mtest.CreateSuccessResponse())
+			},
+			args: args{
+				ctx:    ctx,
+				todoID: "valid",
+				updatedTodoAgg: &todoAgg.Todo{
+					Title:       "Changing The Title",
+					Description: "",
+					Status:      "",
+				},
+			},
+			want: &todoAgg.Todo{
+				ID:          "valid",
+				Title:       "Changing The Title",
+				Description: "Change Description",
+				Status:      "Change Status",
+			},
+			wantErr: true,
+		},
+		{
+			id:   4,
+			name: "Nothing to Update Error - Failure",
+			beforeTest: func(m *mtest.T) {
+				m.AddMockResponses(mtest.CreateSuccessResponse())
+			},
+			args: args{
+				ctx:    ctx,
+				todoID: "valid",
+				updatedTodoAgg: &todoAgg.Todo{
+					Title:       "",
+					Description: "",
+					Status:      "",
+				},
+			},
+			want: &todoAgg.Todo{
+				ID:          "valid",
+				Title:       "Changing The Title",
+				Description: "Change Description",
+				Status:      "Change Status",
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		mt.Run(tt.name, func(mt *mtest.T) {
+			if tt.beforeTest != nil {
+				tt.beforeTest(mt)
+			}
+			todoRepo := &TodoRepo{client: mt.Client}
+			_, err := todoRepo.UpdateTodo(tt.args.ctx, tt.args.todoID, tt.args.updatedTodoAgg)
+			// Check for errors and ensure they match the expected outcome
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Test ID %d - UpdateTodo() error = %v, wantErr = %v", tt.id, err, tt.wantErr)
+			}
+
+			// if tt.want != nil && !reflect.DeepEqual(result, tt.want) {
+			// 	t.Errorf("Test ID %d - UpdateTodo() = %v, expected = %v", tt.id, result, tt.want)
+			// }
+		})
+	}
+}
+
 func TestTodoRepo_DeleteTodo(t *testing.T) {
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 	// defer mt.Close() // Ensures resources are properly released

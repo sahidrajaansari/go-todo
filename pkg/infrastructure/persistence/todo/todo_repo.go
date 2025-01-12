@@ -115,9 +115,6 @@ func (tr *TodoRepo) UpdateTodo(ctx context.Context, todoID string, updatedTodoAg
 	).Decode(&todo)
 
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, fmt.Errorf("no Todo found with ID: %s", todoID)
-		}
 		return nil, fmt.Errorf("failed to update Todo: %v", err)
 	}
 
