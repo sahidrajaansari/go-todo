@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	tService "todo-level-5/pkg/application/todo"
 	tContracts "todo-level-5/pkg/contract/todo"
@@ -59,7 +60,28 @@ func (th *TodoHandler) GetTodoByID(ctx *gin.Context) {
 }
 
 func (th *TodoHandler) UpdateTodoByID(ctx *gin.Context) {
+	var requestBody *tContracts.UpdateTodoRequest
+	if err := ctx.BindJSON(&requestBody); err != nil {
+		ctx.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+	}
+	requestBody.SetDefaultValues()
+	log.Println("In Handler; ", requestBody)
 
+	todo, err := th.tService.UpdateTodoByID(ctx, requestBody)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Failed to retrieve todo item",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Todo Updated successfully",
+		"todo":    todo,
+	})
 }
 
 func (th *TodoHandler) GetTodos(ctx *gin.Context) {

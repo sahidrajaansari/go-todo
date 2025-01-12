@@ -96,7 +96,7 @@ func (tr *TodoRepo) GetTodos(ctx context.Context) ([]*todoAgg.Todo, error) {
 	return todos, nil
 }
 
-func (tr *TodoRepo) UpdateTodo(ctx context.Context, updatedTodoAgg *todoAgg.Todo, todoID string) (*todoAgg.Todo, error) {
+func (tr *TodoRepo) UpdateTodo(ctx context.Context, todoID string, updatedTodoAgg *todoAgg.Todo) (*todoAgg.Todo, error) {
 	var todo TodoModel
 	updatedFields := bson.M{}
 	err := getUpdatedFields(updatedTodoAgg, &updatedFields)
@@ -106,6 +106,7 @@ func (tr *TodoRepo) UpdateTodo(ctx context.Context, updatedTodoAgg *todoAgg.Todo
 	updateQuery := bson.M{
 		"$set": updatedFields,
 	}
+	log.Println("Int Repo; ", updateQuery)
 
 	err = todoCollection(tr.client).FindOneAndUpdate(
 		ctx,

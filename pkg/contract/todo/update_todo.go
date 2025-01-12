@@ -7,9 +7,21 @@ type UpdateTodoRequest struct {
 }
 
 type UpdateTodoResponse struct {
-	Id          string `json:"id" binding:"required"`
+	ID          string `json:"id" binding:"required"`
 	Title       string `json:"title" binding:"required"`
 	Description string `json:"description" binding:"required"`
 	Status      string `json:"status" binding:"required"`
 	UpdatedAt   string `json:"updatedat"`
+}
+
+func (req *UpdateTodoRequest) SetDefaultValues() {
+	if req.Title == "" {
+		req.Title = ""
+	}
+	if req.Description == "" {
+		req.Description = ""
+	}
+	if req.Status == "" {
+		req.Status = ""
+	}
 }

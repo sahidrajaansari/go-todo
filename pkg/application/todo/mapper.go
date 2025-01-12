@@ -5,13 +5,17 @@ import (
 	todoagg "todo-level-5/pkg/domain/todo_aggregate"
 )
 
-func FromSpaceTodoRequest(todoId string, tsr *tContracts.CreateTodoRequest) *todoagg.Todo {
-	return todoagg.NewTodo(todoId, tsr.Title, tsr.Description, tsr.Status)
+func fromCreateTodoRequest(todoID string, tsr *tContracts.CreateTodoRequest) *todoagg.Todo {
+	return todoagg.NewTodo(todoID, tsr.Title, tsr.Description, tsr.Status)
 }
 
-func ToCreateSpaceRes(tAgg *todoagg.Todo) *tContracts.CreateTodoResponse {
+func fromUpdateTodoRequest(todoID string, tsr *tContracts.UpdateTodoRequest) *todoagg.Todo {
+	return todoagg.NewTodo(todoID, tsr.Title, tsr.Description, tsr.Status)
+}
+
+func ToCreateTodoRes(tAgg *todoagg.Todo) *tContracts.CreateTodoResponse {
 	return &tContracts.CreateTodoResponse{
-		Id:          tAgg.ID,
+		ID:          tAgg.ID,
 		Title:       tAgg.Title,
 		Description: tAgg.Description,
 	}
@@ -19,9 +23,19 @@ func ToCreateSpaceRes(tAgg *todoagg.Todo) *tContracts.CreateTodoResponse {
 
 func ToGetByIDRes(tAgg *todoagg.Todo) *tContracts.GetTodoResponse {
 	return &tContracts.GetTodoResponse{
-		Id:          tAgg.ID,
+		ID:          tAgg.ID,
 		Title:       tAgg.Title,
 		Description: tAgg.Description,
 		Status:      tAgg.Status,
+	}
+}
+
+func toUpateTodoRes(tAgg *todoagg.Todo) *tContracts.UpdateTodoResponse {
+	return &tContracts.UpdateTodoResponse{
+		ID:          tAgg.ID,
+		Title:       tAgg.Title,
+		Description: tAgg.Description,
+		Status:      tAgg.Status,
+		UpdatedAt:   tAgg.MetaData.CreatedAt.Local().String(),
 	}
 }
