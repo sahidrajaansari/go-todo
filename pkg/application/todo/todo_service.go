@@ -2,7 +2,6 @@ package todo
 
 import (
 	"context"
-	"log"
 	tContracts "todo-level-5/pkg/contract/todo"
 	tRepo "todo-level-5/pkg/infrastructure/persistence/todo"
 
@@ -64,8 +63,6 @@ func (ts *TodoService) GetTodos(ctx context.Context) ([]*tContracts.GetTodoRespo
 func (ts *TodoService) UpdateTodoByID(ctx *gin.Context, tsr *tContracts.UpdateTodoRequest) (*tContracts.UpdateTodoResponse, error) {
 	todoID := ctx.Param("id")
 	todoAgg := fromUpdateTodoRequest(todoID, tsr)
-	log.Println("In Service ;", todoID)
-	log.Println("In Service ;", todoAgg)
 
 	todo, err := ts.tRepo.UpdateTodo(ctx, todoID, todoAgg)
 	if err != nil {

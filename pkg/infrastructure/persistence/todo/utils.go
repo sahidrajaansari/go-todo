@@ -23,6 +23,6 @@ func getUpdatedFields(updatedTodoAgg *todoAgg.Todo, updatedFields *bson.M) error
 		return fmt.Errorf("no fields have been updated")
 	}
 
-	(*updatedFields)["updatedAt"] = time.Now()
+	(*updatedFields)["updatedat"] = time.Now()
 	return nil
 }

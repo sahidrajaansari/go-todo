@@ -36,6 +36,6 @@ func toUpateTodoRes(tAgg *todoagg.Todo) *tContracts.UpdateTodoResponse {
 		Title:       tAgg.Title,
 		Description: tAgg.Description,
 		Status:      tAgg.Status,
-		UpdatedAt:   tAgg.MetaData.CreatedAt.Local().String(),
+		UpdatedAt:   tAgg.MetaData.UpdatedAt.String(),
 	}
 }

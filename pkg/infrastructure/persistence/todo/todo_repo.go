@@ -106,7 +106,6 @@ func (tr *TodoRepo) UpdateTodo(ctx context.Context, todoID string, updatedTodoAg
 	updateQuery := bson.M{
 		"$set": updatedFields,
 	}
-	log.Println("Int Repo; ", updateQuery)
 
 	err = todoCollection(tr.client).FindOneAndUpdate(
 		ctx,

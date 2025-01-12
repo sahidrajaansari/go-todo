@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
 	tService "todo-level-5/pkg/application/todo"
 	tContracts "todo-level-5/pkg/contract/todo"
@@ -67,7 +66,6 @@ func (th *TodoHandler) UpdateTodoByID(ctx *gin.Context) {
 		})
 	}
 	requestBody.SetDefaultValues()
-	log.Println("In Handler; ", requestBody)
 
 	todo, err := th.tService.UpdateTodoByID(ctx, requestBody)
 	if err != nil {
