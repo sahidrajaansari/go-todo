@@ -58,6 +58,10 @@ func (th *TodoHandler) GetTodoByID(ctx *gin.Context) {
 
 }
 
+func (th *TodoHandler) UpdateTodoByID(ctx *gin.Context) {
+
+}
+
 func (th *TodoHandler) GetTodos(ctx *gin.Context) {
 	// Get the todos from the service layer
 	todos, err := th.tService.GetTodos(ctx)

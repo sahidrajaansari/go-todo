@@ -96,6 +96,34 @@ func (tr *TodoRepo) GetTodos(ctx context.Context) ([]*todoAgg.Todo, error) {
 	return todos, nil
 }
 
+func (tr *TodoRepo) UpdateTodo(ctx context.Context, updatedTodoAgg *todoAgg.Todo, todoID string) (*todoAgg.Todo, error) {
+	var todo TodoModel
+	updatedFields := bson.M{}
+	err := getUpdatedFields(updatedTodoAgg, &updatedFields)
+	if err != nil {
+		return nil, err
+	}
+	updateQuery := bson.M{
+		"$set": updatedFields,
+	}
+
+	err = todoCollection(tr.client).FindOneAndUpdate(
+		ctx,
+		bson.M{"_id": todoID},
+		updateQuery,
+		options.FindOneAndUpdate().SetReturnDocument(options.After), // Return the updated document
+	).Decode(&todo)
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, fmt.Errorf("no Todo found with ID: %s", todoID)
+		}
+		return nil, fmt.Errorf("failed to update Todo: %v", err)
+	}
+
+	return todo.toDomain(), nil // Return the updated Todo
+}
+
 func (tr *TodoRepo) DeleteTodo(ctx context.Context, todoID string) error {
 	result, err := todoCollection(tr.client).DeleteOne(ctx, bson.M{
 		"_id": todoID,

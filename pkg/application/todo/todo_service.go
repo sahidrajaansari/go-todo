@@ -60,6 +60,11 @@ func (ts *TodoService) GetTodos(ctx context.Context) ([]*tContracts.GetTodoRespo
 	return allTodos, nil
 }
 
+func (ts *TodoService) UpdateTodoByID(ctx *gin.Context, tsr *tContracts.UpdateTodoRequest) (*tContracts.UpdateTodoResponse, error) {
+
+	return nil, nil
+}
+
 func (ts *TodoService) DeleteTodo(ctx *gin.Context) error {
 	todoID := ctx.Param("id")
 
