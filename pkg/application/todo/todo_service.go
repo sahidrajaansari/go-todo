@@ -2,6 +2,7 @@ package todo
 
 import (
 	"context"
+	"fmt"
 	"log"
 	tContracts "todo-level-5/pkg/contract/todo"
 	iPersist "todo-level-5/pkg/domain/persistence"
@@ -36,8 +37,11 @@ func (ts *TodoService) Create(ctx context.Context, tsr *tContracts.CreateTodoReq
 	return ToCreateTodoRes(todo), nil
 }
 
-func (ts *TodoService) GetTodoByID(ctx *gin.Context) (*tContracts.GetTodoResponse, error) {
-	todoID := ctx.Param("id")
+func (ts *TodoService) GetTodoByID(ctx context.Context) (*tContracts.GetTodoResponse, error) {
+	todoID, ok := ctx.Value("todoID").(string)
+	if !ok {
+		return nil, fmt.Errorf("todoID not found in context")
+	}
 
 	todo, err := ts.tRepo.GetTodoByID(ctx, todoID)
 	if err != nil {

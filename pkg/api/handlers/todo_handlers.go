@@ -42,6 +42,8 @@ func (th *TodoHandler) CreateTodo(ctx *gin.Context) {
 }
 
 func (th *TodoHandler) GetTodoByID(ctx *gin.Context) {
+	ctx.Set("todoID", ctx.Param("id"))
+
 	todo, err := th.tService.GetTodoByID(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
