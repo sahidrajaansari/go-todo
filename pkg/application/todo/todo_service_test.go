@@ -6,7 +6,6 @@ import (
 	"testing"
 	tContracts "todo-level-5/pkg/contract/todo"
 	"todo-level-5/pkg/domain/persistence/mock"
-	"todo-level-5/pkg/domain/todo_aggregate"
 
 	"github.com/golang/mock/gomock"
 )
@@ -16,7 +15,6 @@ type fields struct {
 }
 
 func TestTodoService_GetTodoByID(t *testing.T) {
-	ctx := getContext()
 
 	type args struct {
 		ctx context.Context
@@ -30,23 +28,37 @@ func TestTodoService_GetTodoByID(t *testing.T) {
 		wantErr    bool
 	}{
 		{
-			name: "Get Todo By Id -Success",
+			id:   1,
+			name: "GetTodoByID_WithValidID_ReturnsSuccess",
 			args: args{
-				ctx: ctx,
+				ctx: createTestContext(validTodoID),
 			},
 			beforeTest: func(f *fields) {
-				f.tRepo.EXPECT().GetTodoByID(ctx, "Valid").Return(&todo_aggregate.TodoAgg, nil)
+				f.tRepo.EXPECT().GetTodoByID(gomock.Any(), validTodoID).Return(&todoAgg, nil)
 			},
-			want:    ToGetByIDRes(&todo_aggregate.TodoAgg),
+			want:    ToGetByIDRes(&todoAgg),
 			wantErr: false,
 		},
 		{
-			name: "Error - Todo Not Found",
+			id:   2,
+			name: "GetTodoByID_WithInvalidID_ReturnsError",
 			args: args{
-				ctx: ctx,
+				ctx: createTestContext(inValidTodoID),
 			},
 			beforeTest: func(f *fields) {
-				f.tRepo.EXPECT().GetTodoByID(ctx, "Invalid").Return(nil, "Error") // assuming `someError` is a defined error
+				f.tRepo.EXPECT().GetTodoByID(gomock.Any(), inValidTodoID).Return(nil, errInvalidTodoID) // assuming `someError` is a defined error
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			id:   3,
+			name: "GetTodoByID_WithMissingTodoID_ReturnsError",
+			args: args{
+				ctx: context.Background(),
+			},
+			beforeTest: func(f *fields) {
+				//Since error Occurs Earlier
 			},
 			want:    nil,
 			wantErr: true,
@@ -58,8 +70,6 @@ func TestTodoService_GetTodoByID(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-
-			// Initialize mock repo and setup test data
 			f := fields{
 				tRepo: mock.NewMockITodoRepo(ctrl),
 			}
@@ -67,20 +77,14 @@ func TestTodoService_GetTodoByID(t *testing.T) {
 			if tt.beforeTest != nil {
 				tt.beforeTest(&f)
 			}
-
-			// Create the service and call the method
 			tServ := NewTodoService(f.tRepo)
 			got, err := tServ.GetTodoByID(tt.args.ctx)
-
-			// Check for errors
 			if (err != nil) != tt.wantErr {
-				t.Errorf("GetTodoByID() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("ID %v GetTodoByID() error = %v, wantErr %v", tt.id, err, tt.wantErr)
 				return
 			}
-
-			// Check if the result matches the expected output
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetTodoByID() got = %v, want %v", got, tt.want)
+				t.Errorf("ID %v GetTodoByID() got = %v, want %v", tt.id, got, tt.want)
 			}
 		})
 	}

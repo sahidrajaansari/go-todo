@@ -2,7 +2,7 @@ package todo
 
 import "context"
 
-func getContext() context.Context {
-	ctx := context.WithValue(context.Background(), "todoID", "Valid")
+func createTestContext(todoID string) context.Context {
+	ctx := context.WithValue(context.Background(), "todoID", todoID)
 	return ctx
 }
