@@ -101,20 +101,14 @@ func (tr *TodoRepo) GetTodos(ctx context.Context) ([]*todoAgg.Todo, error) {
 }
 
 func (tr *TodoRepo) DeleteTodo(ctx context.Context, todoID string) error {
-	var todo TodoModel
-
-	opts := mgs.FindOption()
-	query := fmt.Sprintf("_id=%s", todoID)
-
-	result, err := mgs.MongoGoSearch(query, opts)
+	result, err := todoCollection(tr.client).DeleteOne(ctx, bson.M{
+		"_id": todoID,
+	})
 	if err != nil {
-		return errors.New("invalid query parameters ")
-	}
-	findOptions := options.FindOneAndDelete()
-	findOptions.SetProjection(result.Projection)
-
-	if err := todoCollection(tr.client).FindOneAndDelete(ctx, result.Filter, findOptions).Decode(&todo); err != nil {
 		return err
+	}
+	if result.DeletedCount == 0 {
+		return errors.New("document not found")
 	}
 	return nil
 }

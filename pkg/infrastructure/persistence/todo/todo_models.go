@@ -11,7 +11,7 @@ type TodoModel struct {
 	ID          string           `bson:"_id"`
 	Title       string           `bson:"title"`
 	Description string           `bson:"description"`
-	Status      string           `bson:"status`
+	Status      string           `bson:"status"`
 	Metadata    todoAgg.MetaData `bson:",inline"`
 }
 
