@@ -72,11 +72,23 @@ func (tr *TodoRepo) GetTodoByID(ctx context.Context, todoID string) (*todoAgg.To
 
 }
 
-func (tr *TodoRepo) GetTodos(ctx context.Context) ([]*todoAgg.Todo, error) {
+func (tr *TodoRepo) GetTodos(ctx context.Context, query string) ([]*todoAgg.Todo, error) {
 	var todos []*todoAgg.Todo
-	log.Println("Fetching all the todos")
 
-	cursor, err := todoCollection(tr.client).Find(ctx, bson.M{})
+	opts := mgs.FindOption()
+	opts.SetMaxLimit(100)
+	result, err := mgs.MongoGoSearch(query, opts)
+	log.Println(result.Filter)
+	if err != nil {
+		return nil, err
+	}
+	findOpts := options.Find()
+	findOpts.SetLimit(result.Limit)
+	findOpts.SetSkip(result.Skip)
+	findOpts.SetSort(result.Sort)
+	findOpts.SetProjection(result.Projection)
+
+	cursor, err := todoCollection(tr.client).Find(ctx, result.Filter, findOpts)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +97,6 @@ func (tr *TodoRepo) GetTodos(ctx context.Context) ([]*todoAgg.Todo, error) {
 	for cursor.Next(ctx) {
 		var todo TodoModel
 		if err := cursor.Decode(&todo); err != nil {
-			log.Println("Error decoding todo:", err)
 			continue
 		}
 		todos = append(todos, todo.toDomain())

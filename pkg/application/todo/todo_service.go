@@ -2,6 +2,7 @@ package todo
 
 import (
 	"context"
+	"log"
 	tContracts "todo-level-5/pkg/contract/todo"
 	tRepo "todo-level-5/pkg/infrastructure/persistence/todo"
 
@@ -46,8 +47,11 @@ func (ts *TodoService) GetTodoByID(ctx *gin.Context) (*tContracts.GetTodoRespons
 	return ToGetByIDRes(todo), nil
 }
 
-func (ts *TodoService) GetTodos(ctx context.Context) ([]*tContracts.GetTodoResponse, error) {
-	todos, err := ts.tRepo.GetTodos(ctx)
+func (ts *TodoService) GetTodos(ctx *gin.Context) ([]*tContracts.GetTodoResponse, error) {
+	query := ctx.Request.URL.RawQuery
+	log.Println(query)
+
+	todos, err := ts.tRepo.GetTodos(ctx, query)
 	if err != nil {
 		return nil, err
 	}

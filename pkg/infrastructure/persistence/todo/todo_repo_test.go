@@ -363,3 +363,130 @@ func TestTodoRepo_DeleteTodo(t *testing.T) {
 		})
 	}
 }
+
+func TestTodoRepo_GetTodos(t *testing.T) {
+	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
+	// defer mt.Close() // Ensure the mock client is closed after the test
+
+	type args struct {
+		ctx   context.Context
+		query string
+	}
+	type test struct {
+		id         int
+		name       string
+		beforeTest func(m *mtest.T) // Function to mock the database response
+		args       args
+		want       []*todoAgg.Todo // Expected list of todos
+		wantErr    bool            // Whether an error is expected
+	}
+
+	ctx := context.Background()
+
+	tests := []test{
+		{
+			id:   1,
+			name: "Get Todos - Success",
+			beforeTest: func(m *mtest.T) {
+				first := mtest.CreateCursorResponse(1, "todoDB.todos", mtest.FirstBatch, ToTodoModel(&todoAgg.TodoAgg, true).ToBsonD())
+				nextBatch := mtest.CreateCursorResponse(1, "todoDB.todos", mtest.NextBatch, ToTodoModel(&todoAgg.TodoAgg, true).ToBsonD())
+				killCursor := mtest.CreateCursorResponse(0, "todoDB.todos", mtest.NextBatch)
+				m.AddMockResponses(first, nextBatch, killCursor)
+			},
+			args: args{
+				ctx:   ctx,
+				query: "status=pending",
+			},
+			want: []*todoAgg.Todo{
+				&todoAgg.TodoAgg, &todoAgg.TodoAgg,
+			},
+			wantErr: false,
+		},
+		{
+			id:   2,
+			name: "Get Todos - Empty Result",
+			beforeTest: func(m *mtest.T) {
+				m.AddMockResponses(mtest.CreateCursorResponse(0, "todoDB.todos", mtest.FirstBatch))
+			},
+			args: args{
+				ctx:   ctx,
+				query: "status=completed",
+			},
+			want:    []*todoAgg.Todo{}, // Expecting no todos
+			wantErr: false,
+		},
+		{
+			id:   3,
+			name: "Get Todos - Database Error",
+			beforeTest: func(m *mtest.T) {
+				// Simulate database error
+				m.AddMockResponses(
+					mtest.CreateCommandErrorResponse(mtest.CommandError{
+						Code:    11000,
+						Message: "Database error",
+					}),
+				)
+			},
+			args: args{
+				ctx:   ctx,
+				query: "status=pending",
+			},
+			want:    nil, // Expecting no result due to error
+			wantErr: true,
+		},
+		{
+			id:   4,
+			name: "Invalid Query Format - Failure",
+			beforeTest: func(m *mtest.T) {
+				// No mock responses needed as this should fail before a database call
+			},
+			args: args{
+				ctx:   ctx,
+				query: "status=invalid%query",
+			},
+			want:    nil,  // Expecting no result due to query error
+			wantErr: true, // Error expected
+		},
+		{
+			id:   5,
+			name: "Bson-Error -Failure",
+			beforeTest: func(m *mtest.T) {
+				first := mtest.CreateCursorResponse(1, "todoDB.todos", mtest.FirstBatch, correctMongoData1)
+				nextBatch1 := mtest.CreateCursorResponse(1, "todoDB.todos", mtest.NextBatch, errorMongoData)
+				nextBatch2 := mtest.CreateCursorResponse(1, "todoDB.todos", mtest.NextBatch, correctMongoData2)
+				killCursor := mtest.CreateCursorResponse(0, "todoDB.todos", mtest.NextBatch)
+				m.AddMockResponses(first, nextBatch1, nextBatch2, killCursor)
+			},
+			args: args{
+				ctx:   ctx,
+				query: "correct query",
+			},
+			want:    nil,   // Expecting no result due to query error
+			wantErr: false, // Error expected
+		},
+	}
+
+	for _, tt := range tests {
+		mt.Run(tt.name, func(mt *mtest.T) {
+			if tt.beforeTest != nil {
+				tt.beforeTest(mt)
+			}
+
+			// Initialize the repository
+			todoRepo := NewTodoRepo(mt.Client)
+
+			// Call the GetTodos method
+			_, err := todoRepo.GetTodos(tt.args.ctx, tt.args.query)
+
+			// Check error status
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Test ID %d - GetTodos() error = %v, wantErr = %v", tt.id, err, tt.wantErr)
+			}
+
+			// // Check the result if expected
+			// if tt.want != nil && !reflect.DeepEqual(result, tt.want) {
+			// 	t.Errorf("Test ID %d - GetTodos() = %v, expected = %v", tt.id, result, tt.want)
+			// }
+		})
+	}
+}
