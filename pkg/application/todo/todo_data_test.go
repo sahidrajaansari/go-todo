@@ -119,12 +119,12 @@ var (
 		time.Date(2025, 1, 6, 12, 15, 0, 0, time.UTC),
 	)
 
-	todoAgg3 = CreateSampleTodo(
-		"5uOWzlHfXbhQAkRRk00StyGWAe",
-		"Clean the house",
-		"Living room, kitchen, and bedrooms",
-		"pending",
-		time.Date(2025, 1, 8, 9, 15, 0, 0, time.UTC),
-		time.Date(2025, 1, 8, 9, 15, 0, 0, time.UTC),
-	)
+	// todoAgg3 = CreateSampleTodo(
+	// 	"5uOWzlHfXbhQAkRRk00StyGWAe",
+	// 	"Clean the house",
+	// 	"Living room, kitchen, and bedrooms",
+	// 	"pending",
+	// 	time.Date(2025, 1, 8, 9, 15, 0, 0, time.UTC),
+	// 	time.Date(2025, 1, 8, 9, 15, 0, 0, time.UTC),
+	// )
 )
