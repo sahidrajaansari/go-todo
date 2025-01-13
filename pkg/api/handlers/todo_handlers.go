@@ -68,6 +68,7 @@ func (th *TodoHandler) UpdateTodoByID(ctx *gin.Context) {
 		})
 	}
 	requestBody.SetDefaultValues()
+	ctx.Set("todoID", ctx.Param("id"))
 
 	todo, err := th.tService.UpdateTodoByID(ctx, requestBody)
 	if err != nil {

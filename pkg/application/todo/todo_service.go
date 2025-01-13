@@ -3,7 +3,6 @@ package todo
 import (
 	"context"
 	"fmt"
-	"log"
 	tContracts "todo-level-5/pkg/contract/todo"
 	iPersist "todo-level-5/pkg/domain/persistence"
 
@@ -51,32 +50,35 @@ func (ts *TodoService) GetTodoByID(ctx context.Context) (*tContracts.GetTodoResp
 	return ToGetByIDRes(todo), nil
 }
 
-func (ts *TodoService) GetTodos(ctx *gin.Context) ([]*tContracts.GetTodoResponse, error) {
+func (ts *TodoService) GetTodos(ctx *gin.Context) ([]tContracts.GetTodoResponse, error) {
 	query := ctx.Request.URL.RawQuery
-	log.Println(query)
 
 	todos, err := ts.tRepo.GetTodos(ctx, query)
 	if err != nil {
 		return nil, err
 	}
-	var allTodos []*tContracts.GetTodoResponse
+	var allTodos []tContracts.GetTodoResponse
 
 	for _, todo := range todos {
-		allTodos = append(allTodos, ToGetByIDRes(todo))
+		allTodos = append(allTodos, (*ToGetByIDRes(todo)))
 	}
 
 	return allTodos, nil
 }
 
-func (ts *TodoService) UpdateTodoByID(ctx *gin.Context, tsr *tContracts.UpdateTodoRequest) (*tContracts.UpdateTodoResponse, error) {
-	todoID := ctx.Param("id")
+func (ts *TodoService) UpdateTodoByID(ctx context.Context, tsr *tContracts.UpdateTodoRequest) (tContracts.UpdateTodoResponse, error) {
+	todoID, ok := ctx.Value("todoID").(string)
+	if !ok {
+		return tContracts.UpdateTodoResponse{}, fmt.Errorf("todoID not found in context")
+	}
+
 	todoAgg := fromUpdateTodoRequest(todoID, tsr)
 
 	todo, err := ts.tRepo.UpdateTodo(ctx, todoID, todoAgg)
 	if err != nil {
-		return nil, err
+		return tContracts.UpdateTodoResponse{}, err
 	}
-	return toUpateTodoRes(todo), nil
+	return (*toUpateTodoRes(todo)), nil
 }
 
 func (ts *TodoService) DeleteTodo(ctx *gin.Context) error {
