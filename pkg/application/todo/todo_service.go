@@ -81,8 +81,11 @@ func (ts *TodoService) UpdateTodoByID(ctx context.Context, tsr *tContracts.Updat
 	return (*toUpateTodoRes(todo)), nil
 }
 
-func (ts *TodoService) DeleteTodo(ctx *gin.Context) error {
-	todoID := ctx.Param("id")
+func (ts *TodoService) DeleteTodo(ctx context.Context) error {
+	todoID, ok := ctx.Value("todoID").(string)
+	if !ok {
+		return fmt.Errorf("todoID not found in context")
+	}
 
 	err := ts.tRepo.DeleteTodo(ctx, todoID)
 	if err != nil {

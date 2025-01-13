@@ -105,6 +105,8 @@ func (th *TodoHandler) GetTodos(ctx *gin.Context) {
 }
 
 func (th *TodoHandler) DeleteTodo(ctx *gin.Context) {
+	ctx.Set("todoID", ctx.Param("id"))
+
 	err := th.tService.DeleteTodo(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{

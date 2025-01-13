@@ -334,3 +334,74 @@ func TestTodoService_UpdateTodoByID(t *testing.T) {
 		})
 	}
 }
+
+func TestTodoService_DeleteTodo(t *testing.T) {
+	ctx := createTestContext(validTodoID)
+	type args struct {
+		ctx context.Context
+	}
+	type test struct {
+		id         int
+		name       string
+		args       args
+		beforeTest func(f *fields)
+		wantErr    bool
+	}
+	tests := []test{
+		{
+			id:   1,
+			name: "DeleteTodo_Success",
+			args: args{
+				ctx: ctx,
+			},
+			beforeTest: func(f *fields) {
+				f.tRepo.EXPECT().
+					DeleteTodo(ctx, validTodoID).
+					Return(nil)
+			},
+			wantErr: false,
+		},
+		{
+			id:   2,
+			name: "DeleteTodo_RepositoryError",
+			args: args{
+				ctx: ctx,
+			},
+			beforeTest: func(f *fields) {
+				f.tRepo.EXPECT().
+					DeleteTodo(ctx, validTodoID).
+					Return(errRepositoryError)
+			},
+			wantErr: true,
+		},
+		{
+			id:   4,
+			name: "UpdateTodoByID_WithMissingTodoID_ReturnsError",
+			args: args{
+				ctx: context.Background(),
+			},
+			beforeTest: func(f *fields) {
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			f := fields{
+				tRepo: mock.NewMockITodoRepo(ctrl),
+			}
+
+			if tt.beforeTest != nil {
+				tt.beforeTest(&f)
+			}
+			tServ := NewTodoService(f.tRepo)
+			err := tServ.DeleteTodo(tt.args.ctx)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ID %v GetTodoByID() error = %v, wantErr %v", tt.id, err, tt.wantErr)
+				return
+			}
+		})
+	}
+}
