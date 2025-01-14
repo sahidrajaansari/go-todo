@@ -2,7 +2,7 @@
 include .env
 
 # Define targets as phony to prevent conflicts with file names
-.PHONY: up down run-app build start
+.PHONY: up down run-app build start clean restart
 
 # Bring up the Docker containers, build images if necessary, and remove any orphaned containers
 up:
@@ -24,8 +24,9 @@ clean:
 start: 
 	@env DATABASE_USER=${DATABASE_USER} DATABASE_PASSWORD=${DATABASE_PASSWORD} ./${BINARY}
 
+test:
+	go test ./... -v -cover
+
 # Restart the application by cleaning, rebuilding, and starting it
-restart: 
-	@make clean
-	@make build
-	@make start
+restart: clean build start
+
