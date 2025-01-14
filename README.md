@@ -1,5 +1,20 @@
 # go-todo
 
+## Table of Contents
+1. [Getting Started](#getting-started)
+2. [Environment Variables](#environment-variables)
+3. [Folder Structure](#folder-structure)
+4. [Project Overview](#project-overview)
+    - [cmd/server](#cmdserver)
+    - [config/db](#configdb)
+    - [pkg/api/handlers](#pkgapihandlers)
+    - [pkg/application/todo](#pkgapplicationtodo)
+    - [pkg/contract/todo](#pkgcontracttodo)
+    - [di](#di)
+    - [domain/persistence](#domainpersistence)
+    - [infrastructure/persistence/todo](#infrastructurepersistencetodo)
+
+
 ## Project Overview
 
 This backend is built in **Go** and structured to follow a clean architecture. Below is a description of the key parts of the project.
