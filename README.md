@@ -1,108 +1,5 @@
 # go-todo
 
-## Commands to Run
-
-- **Clone the repository**:  
-   ```bash
-   git clone https://github.com/sahidrajaansari/go-todo.git
-   cd go-todo
-   ```
-
-- **Run Docker containers**:  
-   ```bash
-   make up
-   ```
-
-- **Run tests**:  
-   ```bash
-   make test
-   ```
-
-   - **Build the Go binary**:  
-   ```bash
-   make build
-   ```
-
-- **Start the application**:  
-   ```bash
-   make start
-   ```
-
-- **Shut down Docker containers**:  
-   ```bash
-   make down
-   ```
-
-- **Clean up the binary**:  
-   ```bash
-   make clean
-   ```
-
-- **Restart the application**:  
-   ```bash
-   make restart
-   ```
-
-## Folder Structure
-
-```plaintext
-.
-├── cmd/
-│   └── server/
-│       ├── router.go
-│       ├── server.go
-│       └── todo_routes.go
-│   └── main.go
-├── config/
-│   └── db/
-│       └── mongo_init.go
-├── pkg/
-│   └── api/
-│       └── handlers/
-│           ├── handlers.go
-│           └── todo_handlers.go
-│   └── application/
-│       └── todo/
-│           ├── mapper.go
-│           ├── todo_data_test.go
-│           ├── todo_service.go
-│           ├── todo_service_test.go
-│           └── utils.go
-│   └── contract/
-│       └── todo/
-│           ├── create_todo.go
-│           ├── get_todo.go
-│           └── update_todo.go
-├── di/
-│   ├── wire.go
-│   └── wire_gen.go
-├── domain/
-│   └── persistence/
-│       ├── mock/
-│       │   └── mock_todo_repo.go
-│       └── todo_repo.go
-│   └── todo_aggregate/
-│       ├── todo.go
-│       └── todo_data.go
-├── infrastructure/
-│   └── persistence/
-│       └── todo/
-│           ├── todo_data_test.go
-│           ├── todo_models.go
-│           ├── todo_repo.go
-│           └── todo_repo_test.go
-├── script/
-│   ├── post_all_todo.sh
-│   └── go-todo.postman_collection.json
-└── .env
-└── .gitignore
-└── Makefile
-└── README.md
-└── docker-compose.yml
-└── go.mod
-└── go.sum
-```
-
 ## Project Overview
 
 This backend is built in **Go** and structured to follow a clean architecture. Below is a description of the key parts of the project.
@@ -196,3 +93,64 @@ DATABASE_PASSWORD=secret
 BINARY=todo-5
 MONGO_COMPASS_STRING=mongodb://admin:secret@localhost:27017/todo-5?authSource=admin&readPreference=primary&appname=MongDB%20Compass&directConnection=true&ssl=false
 ```
+
+## Folder Structure
+
+```plaintext
+.
+├── cmd/
+│   └── server/
+│       ├── router.go
+│       ├── server.go
+│       └── todo_routes.go
+│   └── main.go
+├── config/
+│   └── db/
+│       └── mongo_init.go
+├── pkg/
+│   └── api/
+│       └── handlers/
+│           ├── handlers.go
+│           └── todo_handlers.go
+│   └── application/
+│       └── todo/
+│           ├── mapper.go
+│           ├── todo_data_test.go
+│           ├── todo_service.go
+│           ├── todo_service_test.go
+│           └── utils.go
+│   └── contract/
+│       └── todo/
+│           ├── create_todo.go
+│           ├── get_todo.go
+│           └── update_todo.go
+├── di/
+│   ├── wire.go
+│   └── wire_gen.go
+├── domain/
+│   └── persistence/
+│       ├── mock/
+│       │   └── mock_todo_repo.go
+│       └── todo_repo.go
+│   └── todo_aggregate/
+│       ├── todo.go
+│       └── todo_data.go
+├── infrastructure/
+│   └── persistence/
+│       └── todo/
+│           ├── todo_data_test.go
+│           ├── todo_models.go
+│           ├── todo_repo.go
+│           └── todo_repo_test.go
+├── script/
+│   ├── post_all_todo.sh
+│   └── go-todo.postman_collection.json
+└── .env
+└── .gitignore
+└── Makefile
+└── README.md
+└── docker-compose.yml
+└── go.mod
+└── go.sum
+```
+
