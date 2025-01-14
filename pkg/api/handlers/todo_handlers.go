@@ -2,17 +2,17 @@ package handlers
 
 import (
 	"net/http"
-	tService "todo-level-5/pkg/application/todo"
+	tService "todo-level-5/pkg/application/services"
 	tContracts "todo-level-5/pkg/contract/todo"
 
 	"github.com/gin-gonic/gin"
 )
 
 type TodoHandler struct {
-	tService *tService.TodoService
+	tService tService.ITodoService
 }
 
-func NewTodoHandler(TodoService *tService.TodoService) *TodoHandler {
+func NewTodoHandler(TodoService tService.ITodoService) *TodoHandler {
 	return &TodoHandler{
 		tService: TodoService,
 	}

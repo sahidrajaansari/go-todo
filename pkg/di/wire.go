@@ -8,7 +8,8 @@ import (
 	"todo-level-5/config/db"
 
 	h "todo-level-5/pkg/api/handlers"
-	tService "todo-level-5/pkg/application/todo"
+	svcInter "todo-level-5/pkg/application/services"
+	tApp "todo-level-5/pkg/application/todo"
 	iPersist "todo-level-5/pkg/domain/persistence"
 	tRepo "todo-level-5/pkg/infrastructure/persistence/todo"
 
@@ -30,13 +31,18 @@ var todoRepoSet = wire.NewSet(
 	wire.Bind(new(iPersist.ITodoRepo), new(*tRepo.TodoRepo)),
 )
 
-func ProvideTodoService() *tService.TodoService {
-	wire.Build(tService.NewTodoService, todoRepoSet)
+func ProvideTodoService() *tApp.TodoService {
+	wire.Build(tApp.NewTodoService, todoRepoSet)
 	return nil
 }
 
+var todoServSet = wire.NewSet(
+	ProvideTodoService,
+	wire.Bind(new(svcInter.ITodoService), new(*tApp.TodoService)),
+)
+
 func ProvideTodoHandler() *h.TodoHandler {
-	wire.Build(h.NewTodoHandler, ProvideTodoService)
+	wire.Build(h.NewTodoHandler, todoServSet)
 	return nil
 }
 

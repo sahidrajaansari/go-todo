@@ -12,6 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"todo-level-5/config/db"
 	"todo-level-5/pkg/api/handlers"
+	"todo-level-5/pkg/application/services"
 	todo2 "todo-level-5/pkg/application/todo"
 	"todo-level-5/pkg/domain/persistence"
 	"todo-level-5/pkg/infrastructure/persistence/todo"
@@ -51,4 +52,8 @@ func ProvideClient() *mongo.Client {
 
 var todoRepoSet = wire.NewSet(
 	ProvideTodoRepo, wire.Bind(new(persistence.ITodoRepo), new(*todo.TodoRepo)),
+)
+
+var todoServSet = wire.NewSet(
+	ProvideTodoService, wire.Bind(new(services.ITodoService), new(*todo2.TodoService)),
 )
