@@ -45,7 +45,7 @@ make test
 
 ## Environment Variables
 
-You will need to set up the following environment variables in your `.env` file:
+You will need to set up the following environment variables in your `.env` file if its not present after clone:
 
 ```
 DATABASE_NAME=todo-5
@@ -161,4 +161,3 @@ Contains the persistence layer for Todo data:
 - **todo_repo.go**: The repository for interacting with MongoDB.
 - **todo_data_test.go**: Contains tests for the Todo repository.
 - **todo_models.go**: Defines the data models for the Todo application.
-```
