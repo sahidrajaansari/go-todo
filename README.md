@@ -1,15 +1,16 @@
-﻿# go-todo (Golang Todo Project)
+# go-todo
 
 ## Commands to Run
 
-- **Build the Go binary**:  
+- **Clone the repository**:  
    ```bash
-   make build
+   git clone https://github.com/sahidrajaansari/go-todo.git
+   cd go-todo
    ```
 
-- **Start the application**:  
+- **Run Docker containers**:  
    ```bash
-   make start
+   make up
    ```
 
 - **Run tests**:  
@@ -17,9 +18,14 @@
    make test
    ```
 
-- **Run Docker containers**:  
+   - **Build the Go binary**:  
    ```bash
-   make up
+   make build
+   ```
+
+- **Start the application**:  
+   ```bash
+   make start
    ```
 
 - **Shut down Docker containers**:  
@@ -144,13 +150,6 @@ Contains the persistence layer for Todo data:
 - **todo_data_test.go**: Contains tests for the Todo repository.
 - **todo_models.go**: Defines the data models for the Todo application.
 
-## Getting Started
-
-### Prerequisites
-- **Go 1.x** or higher
-- **Docker** (for running MongoDB container)
-- **MongoDB** (can be run via Docker)
-
 ### Setup
 1. Clone the repository:
    ```bash
@@ -158,22 +157,27 @@ Contains the persistence layer for Todo data:
    cd go-todo
    ```
 
-2. Build the Go binary:
+2. Run Docker containers:
+   ```bash
+   make up
+   ```
+
+3. Run tests:
+   ```bash
+   make test
+   ```
+
+4. Build the Go binary:
    ```bash
    make build
    ```
 
-3. Start the MongoDB container using Docker (if not already running):
-   ```bash
-   docker-compose up -d
-   ```
-
-4. Run the application:
+5. Start the application:
    ```bash
    make start
    ```
 
-5. To test, you can use tools like **Postman** or **cURL** to interact with the Todo API endpoints.
+6. To test, you can use tools like **Postman** or **cURL** to interact with the Todo API endpoints.
 
 ### Running Tests
 Run the unit tests:
@@ -191,5 +195,4 @@ DATABASE_USER=admin
 DATABASE_PASSWORD=secret
 BINARY=todo-5
 MONGO_COMPASS_STRING=mongodb://admin:secret@localhost:27017/todo-5?authSource=admin&readPreference=primary&appname=MongDB%20Compass&directConnection=true&ssl=false
-```
 ```
