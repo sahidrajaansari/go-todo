@@ -18,10 +18,6 @@ func NewTodoHandler(TodoService *tService.TodoService) *TodoHandler {
 	}
 }
 
-// func todoCollection(client *mongo.Client) *mongo.Collection {
-// 	return client.Database("todoDB").Collection("todos")
-// }
-
 func (th *TodoHandler) CreateTodo(ctx *gin.Context) {
 	var requestBody *tContracts.CreateTodoRequest
 	if err := ctx.BindJSON(&requestBody); err != nil {
