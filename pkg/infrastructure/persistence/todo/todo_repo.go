@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	todoAgg "todo-level-5/pkg/domain/todo_aggregate"
 
 	"github.com/ajclopez/mgs"
@@ -78,7 +77,6 @@ func (tr *TodoRepo) GetTodos(ctx context.Context, query string) ([]*todoAgg.Todo
 	opts := mgs.FindOption()
 	opts.SetMaxLimit(100)
 	result, err := mgs.MongoGoSearch(query, opts)
-	log.Println(result.Filter)
 	if err != nil {
 		return nil, err
 	}
