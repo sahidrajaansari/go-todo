@@ -2,7 +2,6 @@ package todo
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	todoAgg "todo-level-5/pkg/domain/todo_aggregate"
 
@@ -138,7 +137,7 @@ func (tr *TodoRepo) DeleteTodo(ctx context.Context, todoID string) error {
 		return err
 	}
 	if result.DeletedCount == 0 {
-		return errors.New("document not found")
+		return fmt.Errorf("document not found")
 	}
 	return nil
 }
