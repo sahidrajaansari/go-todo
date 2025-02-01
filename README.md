@@ -1,10 +1,20 @@
-# go-todo
+# Todo Application
+
+A sophisticated todo management system that allows users to create, manage, and share tasks within TodoSpaces.
+
+## Features
+- TodoSpace management for organizing tasks
+- Fine-grained access control for sharing Todos
+- Tag-based categorization
+- Firebase authentication
+- Redis caching for permissions
+- MongoDB for data persistence
 
 ## Table of Contents
 1. [Getting Started](#getting-started)
 2. [Environment Variables](#environment-variables)
-3. [Folder Structure](#folder-structure)
-4. [Project Overview](#project-overview)
+3. [Architecture Overview](#architecture-overview)
+4. [Project Structure](#project-structure)
 
 ## Getting Started
 
@@ -45,7 +55,7 @@ make test
 
 ## Environment Variables
 
-You will need to set up the following environment variables in your `.env` file if its not present after clone:
+Create a `.env` file with the following variables:
 
 ```
 DATABASE_NAME=todo-5
@@ -53,7 +63,29 @@ DATABASE_USER=admin
 DATABASE_PASSWORD=secret
 BINARY=todo-5
 MONGO_COMPASS_STRING=mongodb://admin:secret@localhost:27017/todo-5?authSource=admin&readPreference=primary&appname=MongDB%20Compass&directConnection=true&ssl=false
+REDIS_URL=localhost:6379
+FIREBASE_CREDENTIALS_FILE=path/to/firebase-credentials.json
 ```
+
+## Architecture Overview
+
+### Key Components
+- **User**: Authenticated via Firebase
+- **TodoSpace**: Container for organizing Todos
+- **Todo**: Individual task with tags and status
+- **TodoSpaceUserPermissions**: Manages access control
+
+### Technology Stack
+- **Backend**: Go (Golang)
+- **Database**: MongoDB
+- **Caching**: Redis
+- **Authentication**: Firebase
+
+### Database Collections
+- **users**: User information
+- **todo_spaces**: TodoSpace management
+- **todos**: Individual tasks with tags
+- **todo_space_user_permissions**: Access control mappings
 
 ## Folder Structure
 
@@ -115,7 +147,7 @@ MONGO_COMPASS_STRING=mongodb://admin:secret@localhost:27017/todo-5?authSource=ad
 └── go.sum
 ```
 
-## Project Overview
+## Project Structure
 
 This backend is built in **Go** and structured to follow a clean architecture. Below is a description of the key parts of the project.
 

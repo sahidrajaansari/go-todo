@@ -13,7 +13,6 @@ import (
 
 func TestTodoRepo_Create(t *testing.T) {
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
-	// defer mt.Close() // Ensures the mock client is properly closed after tests
 	ctx := context.Background()
 
 	type args struct {
